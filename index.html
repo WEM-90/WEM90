@@ -1,0 +1,154 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>مواعيد الأهلية ونزول الضمان المطور</title>
+<style>
+  body {
+    background-color: #2d2d2d;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    color: #ffffff;
+    margin: 0;
+    text-align: center;
+    padding: 20px;
+    background-image: url(''); /* الخلفية كانت مدموجة base64 */
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
+    background-attachment: fixed;
+  }
+  .container {
+    max-width: 600px;
+    margin: auto;
+    background-color: rgba(45,45,45,0.6);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+  }
+  h1 {
+    font-size: 1.1rem;
+    color: #ff9900;
+    margin-bottom: 20px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+  }
+  table, th, td {
+    border: 1px solid #444;
+  }
+  th {
+    background-color: rgba(0, 191, 255, 0.3);
+    color: rgba(255,255,255,0.8);
+    padding: 10px;
+  }
+  td {
+    padding: 10px;
+    color: rgba(255,255,255,0.8);
+  }
+  td:nth-child(1), td:nth-child(3) {
+    background-color: rgba(50, 50, 50, 0.6);
+  }
+  td:nth-child(2) {
+    background-color: rgba(50, 50, 50, 0.6);
+  }
+  td:nth-child(4) {
+    background-color: rgba(50, 50, 50, 0.6);
+  }
+  .notice {
+    background-color: transparent;
+    color: red;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+  }
+  .visitor-counter {
+    color: red;
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+  }
+  .footer {
+    font-size: 0.8rem;
+    color: #aaa;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>مواعيد صدور الأهلية ونزول الضمان المطور</h1>
+  <table>
+    <tr>
+      <th>التاريخ</th>
+      <th>اليوم</th>
+      <th>الأيام المتبقية</th>
+      <th>العد التنازلي</th>
+    </tr>
+    <tr>
+      <td id="eligibility-date">--</td>
+      <td id="eligibility-day">--</td>
+      <td id="eligibility-remaining">--</td>
+      <td id="eligibility-countdown">--</td>
+    </tr>
+    <tr>
+      <td id="payment-date">--</td>
+      <td id="payment-day">--</td>
+      <td id="payment-remaining">--</td>
+      <td id="payment-countdown">--</td>
+    </tr>
+  </table>
+  <div class="notice">الضمان لا يصرف خلال عطلة نهاية الأسبوع</div>
+  <div class="visitor-counter">عدد الزوار: <span id="visitor-count">0</span></div>
+  <div class="footer">جميع الحقوق محفوظة © 2025 - 𝐄𝐦 “ 𝐖𝐞𝐦_𝟗𝟎<br><a href="https://t.me/Abmankka" target="_blank" style="color:#00bfff;">قروب الضمان المطور</a></div>
+</div>
+
+<script>
+let visitorCount = localStorage.getItem('visitorCount') || 0;
+visitorCount = Number(visitorCount) + 1;
+localStorage.setItem('visitorCount', visitorCount);
+document.getElementById('visitor-count').textContent = visitorCount;
+
+const weekdays = ["الأحد","الإثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
+
+function getNextDate(day) {
+  let now = new Date();
+  let year = now.getFullYear();
+  let month = now.getMonth();
+  let target = new Date(year, month, day);
+  if (target <= now) {
+    month += 1;
+    if (month > 11) { year += 1; month = 0; }
+    target = new Date(year, month, day);
+  }
+  const wd = target.getDay();
+  if(wd === 5) target.setDate(target.getDate() + 3);
+  if(wd === 6) target.setDate(target.getDate() + 2);
+  return target;
+}
+
+function updateRow(targetDate, id_prefix) {
+  const now = new Date();
+  const diff = targetDate - now;
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+  const minutes = Math.floor((diff / (1000 * 60)) % 60);
+  const seconds = Math.floor((diff / 1000) % 60);
+  document.getElementById(id_prefix+"-date").textContent = targetDate.toLocaleDateString("ar-SA");
+  document.getElementById(id_prefix+"-day").textContent = weekdays[targetDate.getDay()];
+  document.getElementById(id_prefix+"-remaining").textContent = days + " يوم";
+  document.getElementById(id_prefix+"-countdown").textContent = `${days}ي،${hours}س،${minutes}د،${seconds}ث`;
+}
+
+function fullUpdate() {
+  const eligibilityDate = getNextDate(27);
+  const paymentDate = getNextDate(1);
+  updateRow(eligibilityDate, "eligibility");
+  updateRow(paymentDate, "payment");
+}
+fullUpdate();
+setInterval(fullUpdate, 1000);
+</script>
+</body>
+</html>
